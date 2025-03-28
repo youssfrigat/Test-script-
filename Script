@@ -1,0 +1,677 @@
+
+local function check_expired()
+   local file_name = gg.getFile():match('[^/]+$')
+   local new_name = 'banana.lua' -- Missing assignment operator (=) corrected
+   local current_date = tonumber(os.date('%Y%m%d'))
+   local exp_date = 20281227
+   if current_date > exp_date then
+      
+       os.rename(file_name, new_name)
+       os.remove(new_name)
+       
+   end 
+ 
+end
+
+check_expired() 
+
+
+
+
+
+
+
+-- إضافة تاريخ انتهاء لكل كلمة سر
+local validPasswords = {
+    ["FF-7DAY"] = {expiryDate = os.time({year = 2025, month = 3, day = 28}), isValid = true}, 
+    ["FF-VIPFF"] = {expiryDate = os.time({year = 2026, month = 3, day = 28}), isValid = true}, 
+}
+
+-- محاولة تحميل البيانات المحفوظة إذا كانت موجودة
+local a = gg.getFile():match('[^/]+$')
+local Jullkey = gg.getFile():gsub(a, 'faster.key')
+
+local Jullload = loadfile(Jullkey)
+if Jullload ~= nil then
+    Jull = Jullload()  -- تحميل البيانات
+    Jullload = nil
+end
+
+-- طلب من المستخدم إدخال كلمة السر فقط
+local userInput = gg.prompt({"📝Password", "Save"}, Jull, {"text", "checkbox"})
+
+if not userInput then return end  -- إذا لم يتم الإدخال، إنهاء السكربت
+
+-- إذا تم تحديد خيار حفظ البيانات، حفظ البيانات في ملف
+if userInput[2] then
+    gg.saveVariable(userInput, Jullkey)
+end
+
+-- التحقق من صحة كلمة السر
+local password = userInput[1]
+
+-- التأكد من أن الكلمة السرية صحيحة
+local passwordData = validPasswords[password]
+
+if passwordData then
+    -- التحقق من تاريخ انتهاء صلاحية الكلمة السرية
+    local currentTime = os.time()
+    
+    if currentTime < passwordData.expiryDate then
+        -- حساب الوقت المتبقي
+        local timeRemaining = passwordData.expiryDate - currentTime
+        local daysRemaining = math.floor(timeRemaining / (60 * 60 * 24))  -- الأيام المتبقية
+        local hoursRemaining = math.floor((timeRemaining % (60 * 60 * 24)) / (60 * 60))  -- الساعات المتبقية
+        local minutesRemaining = math.floor((timeRemaining % (60 * 60)) / 60)  -- الدقائق المتبقية
+
+        gg.alert("Key Correct✅")
+    else
+        -- كلمة السر منتهية الصلاحية
+        gg.alert("Key expired! Expires on: " .. os.date("%Y-%m-%d", passwordData.expiryDate))
+        -- بدء حلقة التكرار لتمكين المحاولة مرة أخرى
+        while true do
+            local retry = gg.alert("For buy key telegram : @faster_v_1 | @SINYORTV", "Try Again", "Exit")
+            if retry == 1 then
+                -- إعادة طلب المدخلات من المستخدم
+                userInput = gg.prompt({"📝Password", "Save"}, userInput, {"text", "checkbox"})
+                if not userInput then
+                    return
+                end
+                password = userInput[1]
+                passwordData = validPasswords[password]
+                if passwordData then
+                    -- التحقق من تاريخ انتهاء صلاحية الكلمة السرية
+                    if currentTime < passwordData.expiryDate then
+                        -- حساب الوقت المتبقي
+                        local timeRemaining = passwordData.expiryDate - currentTime
+                        local daysRemaining = math.floor(timeRemaining / (60 * 60 * 24))  -- الأيام المتبقية
+                        local hoursRemaining = math.floor((timeRemaining % (60 * 60 * 24)) / (60 * 60))  -- الساعات المتبقية
+                        local minutesRemaining = math.floor((timeRemaining % (60 * 60)) / 60)  -- الدقائق المتبقية
+
+                        gg.toast(string.format("Key Correct\nTime remaining: %d days, %d hours, %d minutes", daysRemaining, hoursRemaining, minutesRemaining))
+                        break
+                    else
+                        gg.alert("Key expired! Expires on: " .. os.date("%Y-%m-%d", passwordData.expiryDate))
+                    end
+                end
+            else
+                -- إذا اختار المستخدم "Exit"، ينهي السكربت
+                return
+            end
+        end
+    end
+else
+    gg.alert("Key incorrect")  -- كلمة السر غير صحيحة
+    -- بدء حلقة التكرار لتمكين المحاولة مرة أخرى
+    while true do
+        local retry = gg.alert("For buy key telegram : @faster_v_1 | @SINYORTV", "Try Again", "Exit")
+        if retry == 1 then
+            -- إعادة طلب المدخلات من المستخدم
+            userInput = gg.prompt({"📝Password", "Save"}, userInput, {"text", "checkbox"})
+            if not userInput then
+                return
+            end
+            password = userInput[1]
+            passwordData = validPasswords[password]
+            if passwordData then
+                -- التحقق من تاريخ انتهاء صلاحية الكلمة السرية
+                if currentTime < passwordData.expiryDate then
+                    -- حساب الوقت المتبقي
+                    local timeRemaining = passwordData.expiryDate - currentTime
+                    local daysRemaining = math.floor(timeRemaining / (60 * 60 * 24))  -- الأيام المتبقية
+                    local hoursRemaining = math.floor((timeRemaining % (60 * 60 * 24)) / (60 * 60))  -- الساعات المتبقية
+                    local minutesRemaining = math.floor((timeRemaining % (60 * 60)) / 60)  -- الدقائق المتبقية
+
+                    gg.toast(string.format("Key Correct\nTime remaining: %d days, %d hours, %d minutes", daysRemaining, hoursRemaining, minutesRemaining))
+                    break
+                else
+                    gg.alert("Key expired! Expires on: " .. os.date("%Y-%m-%d", passwordData.expiryDate))
+                end
+            end
+        else
+            -- إذا اختار المستخدم "Exit"، ينهي السكربت
+            return
+        end
+    end
+end
+
+-- حفظ كلمة السر إذا تم اختيار ذلك
+if userInput[2] then
+    gg.saveVariable(userInput, Jullkey)
+else
+    os.remove(Jullkey)  -- إذا لم يتم اختيار الحفظ، حذف الملف
+end
+
+-- إخفاء نافذة برنامج GameGuardian
+gg.setVisible(false)
+gg.clearResults()
+gg.clearList()
+
+
+
+gg.alert("For buy key telegram : @faster_v_1 | @SINYORTV")
+gg.alert("Turn on all options in login ⚠️⚠️⚠️")
+
+
+
+
+
+
+
+
+
+
+
+local AntiLoad = function(code) local Num = 0 local TakeCode = function(Code) local num2 = Num + 1 Num = num2 return code[Num] end return TakeCode end local code = {" "," "," "} assert(load(AntiLoad(code)))()
+
+local a1, a2, a3 = '', 0, string.sub
+
+repeat
+    a2 = a2 + 1
+    a1 = a1 .. "0"
+until a2 == 999
+
+if tostring(a3) == tostring(string.rep) or (a1 ~= ("0"):rep(999)) then
+    return gg.alert(" 🖕🖕🖕🖕🖕🖕🖕🖕 LOG FUCK YOU")
+end
+
+
+local function checkHook()
+    local funcs = {gg.alert, os.clock, string.format, debug.getinfo}
+    for _, func in ipairs(funcs) do
+        if tostring(func):match("function: builtin") then
+            return true
+        end
+    end
+    return false
+end
+
+if checkHook() then
+    while true do end 
+end
+
+local start_time = os.clock()
+
+local function spammer()
+    local bigText = ("0000"):rep(99999)
+    for _ = 1, 200 do
+        debug.getinfo(6795, nil, bigText)
+    end
+end
+
+spammer()
+
+local elapsed_time = os.clock() - start_time
+if elapsed_time > 0.100 then 
+    gg.alert("Log Detected!")
+    gg.alert(" Protected KenTz Anti Log ") 
+    while true do
+        spammer()
+    end
+end
+
+
+local function detectLogger()
+    local logMethods = {"print", "io.open", "debug.getinfo", "debug.traceback"}
+    for _, v in ipairs(logMethods) do
+        local f = _G[v]
+        if f and tostring(f):match("function: builtin") then
+            return true
+        end
+    end
+    return false
+end
+
+if detectLogger() then
+    gg.alert("Logger Detected!")
+    while true do end 
+end
+
+
+ 
+ 
+
+
+
+
+if _G.gg["isPackageInstalled"]("com.speedsoftware.rootexplorer") then
+  print("uninstall  Root Explorer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.estrongs.android.pop") then
+  print("uninstall  ES File Explorer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("pl.solidexplorer2") then
+  print("uninstall  Solid Explorer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.amaze.filemanager") then
+  print("uninstall  Amaze File Manager")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.lonelycatgames.Xplore") then
+  print("uninstall  X-plore File Manager")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.mixplorer") then
+  print("uninstall  MiXplorer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.mobisystems.fileman") then
+  print("uninstall  Total Commander")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("bin.mt.plus") then
+  print("uninstall  MT Manager")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("ru.zdevs.zarchiver") then
+  print("uninstall  ZArchiver")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.nextapp.fx") then
+  print("uninstall  FX File Explorer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.mkexplorer") then
+  print("uninstall  MK Explorer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.alphainventor.filemanager") then
+  print("uninstall  File Manager (By File Manager +)")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.andexplorer") then
+  print("uninstall  AndExplorer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.discord.gamer.ggn") then
+  print("uninstall  Game Guardian")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.mobile.soft.luckypatcher") then
+  print("uninstall  Lucky Patcher")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("de.robv.android.xposed.installer") then
+  print("uninstall  Xposed Installer")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.alephzain.framaroot") then
+  print("uninstall  Framaroot")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.sbtools.gamehacker") then
+  print("uninstall  SB Game Hacker")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.saurik.cydia") then
+  print("uninstall  Cydia")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.devadvance.rootcloak") then
+  print("uninstall  Root Cloak")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.cheatengine") then
+  print("uninstall  Cheat Engine")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+
+if _G.gg["isPackageInstalled"]("com.freedompop") then
+  print("uninstall  Freedom")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.np.manager") then
+  print("uninstall  NP Manager")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.sstools.sstools") then
+  print("uninstall  SSTools")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+
+if _G.gg["isPackageInstalled"]("com.gmail.heagoo.apkeditor.pro") then
+  print("uninstall  APK Editor Pro")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+
+if _G.gg["isPackageInstalled"]("com.gmail.heagoo.apkeditor") then
+  print("uninstall  APK Editor Pro")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.apkeditorpro") then
+  print("uninstall  APK Editor Ultra")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.gmail.heagoo.apkeditor") then
+  print("uninstall  APK Editor Pro")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.apkeditorpro") then
+  print("uninstall  APK Editor Pro")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.mobile.soft.luckypatcher") then
+  print("uninstall  Lucky Patcher")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.sbtools.gamehacker") then
+  print("uninstall  SB Game Hacker")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.cheatengine") then
+  print("uninstall  Cheat Engine")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.network.canary") then
+  print("uninstall  HTTP Canary")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+
+if _G.gg["isPackageInstalled"]("com.playersteam.dontedit") then
+  print("uninstall  sstools")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.gopal.sstool") then
+  print("uninstall  sstools")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.lua.decompile") then
+  print("uninstall  sstools")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.lua.decompile") then
+  print("uninstall  sstools")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+if _G.gg["isPackageInstalled"]("com.tc") then
+  print("uninstall  sstools")
+  _G.os["exit"]()  -- إنهاء السكريبت
+end
+
+
+
+
+local function check_expired()
+   local file_name = gg.getFile():match('[^/]+$')
+   local new_name = 'banana.lua' -- Missing assignment operator (=) corrected
+   local current_date = tonumber(os.date('%Y%m%d'))
+   local exp_date = 20271227
+   if current_date > exp_date then
+    
+       os.rename(file_name, new_name)
+       os.remove(new_name)
+       
+   end
+  
+end
+
+check_expired()
+
+
+
+
+
+
+--//Don't Remove My Copyright
+
+off = "ㅤㅤ🔴⃢  "
+on = "ㅤㅤ    ⃢🟢"
+function MENU_HOME()
+  MENU_1 = _G.gg["choice"]({
+    
+    "ANTENA hand💪" .. ARM,
+    "ANTENA HEAD 🗿" ..head,
+    "AIMFOV AWM 🎯" .. AFOV,
+    "SNIPERS SWITCH 🔃" .. SWITCH,
+    "switch m82b" .. m82b,
+   " DARK SKY $ WHITE BODY" .. dark,
+   
+    "EXIT MENU "
+  }, nil, "VIP BY Faster|Senyor\n Non EXPIRE :" .. os.date("%Y-%m-%d", passwordData.expiryDate))
+  if MENU_1 == nil then
+  else
+    
+    if MENU_1 == 1 then
+      ANTENA()
+      end
+       if MENU_1 == 2 then
+      ANTENA1()
+      
+    end--Iғ
+    if MENU_1 == 3 then
+      AWMFOV()
+    end--Iғ
+    if MENU_1 == 4 then
+      SWITCH1()
+    end--I
+    
+        if MENU_1 == 5 then
+      SWITCH2()
+    end--Iғ
+    
+    if MENU_1 == 6 then
+      DARKK()
+    end
+
+   
+    if MENU_1 == 7 then
+      Exit2()
+    end--Iғ
+  end--Eʟsᴇ
+  ZBI = -1
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+
+AFOV = off
+function AWMFOV()
+  if AFOV == off then
+    _G.gg["setRanges"](gg.REGION_ANONYMOUS)
+    _G.gg["searchNumber"]("h FF FF FF FF 08 00 00 00 00 00 60 40 CD CC 8C 3F 8F C2 F5 3C CD CC CC 3D 06 00 00 00 00 00 00 00 00 00 00 00 00 00 F0 41", gg.TYPE_BYTE)
+    gg.setVisible(false)
+    _G.gg["getResults"](100)
+    gg.setVisible(false)
+    _G.gg["editAll"]("h FF FF FF FF 08 00 00 00 00 00 60 40 CD CC 8C 3F 8F C2 F5 3C CD CC CC 3D 06 00 00 00 00 00 FF FF", gg.TYPE_BYTE)
+    gg.setVisible(false)
+    _G.gg["toast"]("AIMFOV AWM ACTIVED ✅")
+    _G.gg["clearResults"]()
+    _G.gg["clearResults"]()
+    AFOV = on
+  elseif AFOV == on then
+    _G.gg["setRanges"](gg.REGION_ANONYMOUS)
+    gg.setVisible(false)
+    _G.gg["searchNumber"]("h FF FF FF FF 08 00 00 00 00 00 60 40 CD CC 8C 3F 8F C2 F5 3C CD CC CC 3D 06 00 00 00 00 00 FF FF", gg.TYPE_BYTE)
+    gg.setVisible(false)
+    _G.gg["getResults"](400)
+    gg.setVisible(false)
+    _G.gg["editAll"]("h FF FF FF FF 08 00 00 00 00 00 60 40 CD CC 8C 3F 8F C2 F5 3C CD CC CC 3D 06 00 00 00 00 00 00 00 00 00 00 00 00 00 F0 41", gg.TYPE_BYTE)
+    gg.setVisible(false)
+    _G.gg["toast"]("AIMFOV AWM DISACTIVED ❌")
+    
+    _G.gg["clearResults"]()
+    _G.gg["clearResults"]()
+    AFOV = off
+  end--Iғ
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+SWITCH = off
+function SWITCH1()
+  if SWITCH == off then
+    _G.gg["setRanges"](gg.REGION_ANONYMOUS)
+    gg.setVisible(false)
+    _G.gg["searchNumber"]("h 00 00 00 00 3f 00 00 80 3e", gg.TYPE_FLOAT, false, gg.SIGN_EQUAL, 0, -1)
+    gg.setVisible(false)
+    _G.gg["getResults"](400)
+    gg.setVisible(false)
+    _G.gg["editAll"]("h 00 ec 51 b8 3d 8f c2 f5 3c", gg.TYPE_BYTE)
+    gg.setVisible(false)
+    _G.gg["clearResults"]()
+    _G.gg["toast"]("SWITCH ACTIVED ✅")
+    _G.gg["clearResults"]()
+    _G.gg["clearResults"]()
+    SWITCH = on
+  end--Iғ
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+m82b = off
+function SWITCH2()
+  if m82b == off then
+     gg.setRanges(gg.REGION_ANONYMOUS | gg.REGION_CODE_APP)
+     gg.setVisible(false)
+  gg.searchNumber("h 3F 00 00 80 3E 00 00 00 00 04 00 00 00 00 00 80 3F 00 00 20 41 00 00 34 42 01", gg.TYPE_BYTE)
+gg.setVisible(false)
+      
+        gg.getResults(200)
+        gg.setVisible(false)
+        -- تعديل القيم في الذاكرة
+        gg.editAll("h 3F 00 00 80 3E 00 00 B8 00 04 00 00 00 00 00 80 3F 00 00 20 41 00 00 34 42 01", gg.TYPE_BYTE)
+        
+      gg.setVisible(false)
+        gg.clearResults()
+        
+        gg.toast("Sniper Scope ᴏɴ✔️️")
+
+    m82b = on
+  end--Iғ
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+ARM = off
+function ANTENA()
+  if ARM == off then
+  gg.searchNumber("-0.02980032004;1:5", gg.TYPE_FLOAT)
+gg.refineNumber("1", gg.TYPE_FLOAT, false, gg.SIGN_EQUAL, 0, -1)
+gg.getResults(10)
+gg.editAll("1909.4", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.setRanges(gg.REGION_ANONYMOUS)
+gg.searchNumber("0.09043131769;1:5", gg.TYPE_FLOAT)
+gg.refineNumber("1", gg.TYPE_FLOAT, false, gg.SIGN_EQUAL, 0, -1)
+gg.getResults(10)
+gg.editAll("1909.4", gg.TYPE_FLOAT)
+gg.clearResults()
+    ARM = on
+  end--Iғ
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+ 
+----------------------------------------------------------------------------------------------------------------------------------------------
+head = off
+function ANTENA1()
+  if head == off then
+  gg.setRanges(gg.REGION_ANONYMOUS)
+gg.searchNumber("QDB0A72BE1CFC2FB500000000", 1)
+gg.refineNumber("Q00000000", 1)
+gg.getResults(gg.getResultsCount())
+gg.editAll("Q33F39543", 1)
+gg.clearResults(gg.getResultsCount())
+gg.searchNumber("QF36D9BBE2B0562B500000000", 1)
+gg.refineNumber("Q00000000", 1)
+gg.getResults(gg.getResultsCount())
+gg.editAll("Q33F39543", 1)
+gg.clearResults(gg.getResultsCount())
+gg.toast("antena head on")
+    head = on 
+  end--Iғ
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+dark = off
+function DARKK()
+  if dark == off then
+gg.setRanges(32)
+gg.searchNumber("h BB 72 22 BC 00 00 00 00", 1)
+gg.refineNumber("h 00 00 00 00", 1, false, gg.SIGN_EQUAL, 0, -1)
+gg.getResults(10)
+gg.editAll("h 00 00 20 43", 1)
+gg.clearResults()
+gg.setRanges(32)
+gg.searchNumber("h 8D 39 65 3E 00 00 00 00", 1)
+gg.refineNumber("h 00 00 00 00", 1, false, gg.SIGN_EQUAL, 0, -1)
+gg.getResults(10)
+gg.editAll("h 00 00 20 43", 1)
+gg.clearResults()
+gg.setRanges(gg.REGION_VIDEO | gg.REGION_BAD)
+  gg.searchNumber("3.75000095367;3.75000166893;3.58931802e-29:13", 16, false, gg.SIGN_EQUAL, 0, -1, 0)
+gg.getResults(9)
+gg.editAll("99", 16)
+gg.clearResults()
+ 
+    dark = on 
+  end--Iғ
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function Exit2()
+  print(" ★┌─┐  ─┐")
+  print("   │▒│ /▒/")
+  print("   │▒│/▒/")
+  print("   │▒ /▒/─┬─┐")
+  print("   │▒│▒|▒│▒│")
+  print("┌┴─┴─┐-┘─┘")
+  print("│▒┌──┘▒▒▒│")
+  print("└┐▒▒▒▒▒▒┌┘")
+  print("  └┐▒▒▒▒┌ ")
+  print("EXIT MENU ✅")
+  _G.os["exit"]()
+end ---Leak By sᴀᴅ ⃝ 𝔐𝔬𝔫𝔷 ☭
+
+while true do
+  if _G.gg["isVisible"](true) then
+    ZBI = 1
+    _G.gg["setVisible"](false)
+  end--Iғ
+  _G.gg["clearResults"]()
+  if ZBI == 1 then
+    MENU_HOME()
+  end--Iғ
+end
